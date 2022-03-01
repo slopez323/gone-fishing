@@ -24,20 +24,32 @@ function generateFish() {
     let j = Math.floor(Math.random() * 10);
     let k = Math.floor(Math.random() * 10);
 
-    return `${firstDesc[i]} ${secondDesc[j]} ${fishType[k]}`;
-}
+    let fish = `${firstDesc[i]} ${secondDesc[j]} ${fishType[k]}`;
+
+    let special = getSpecialFish({ 'Random': 0.8, 'Golden Doubloon': 0.1, 'Valueless Boot': 0.1 });
+
+    if (special === 'Random') {
+        return fish
+    } else return special
+};
 
 // randomly generated weight (within 10 lbs)
 function generateWeight() {
     let weight = +((Math.random() * 10).toFixed(2));
     return weight;
-}
+};
 
 // randomly generated value (within $20)
-function generateValue() {
+function generateValue(fish) {
+    if (fish === 'Golden Doubloon') {
+        return 50;
+    } else if (fish === 'Valueless Boot'){
+        return 0;
+    } else {
     let value = +((Math.random() * 20).toFixed(2));
     return value;
-}
+    }
+};
 
 // randomly generated time (15min to 1.5hrs)
 function generateTime() {
@@ -78,7 +90,7 @@ ${chalk.bold(fishCount)} fish, ${chalk.bold(totalWeight.toFixed(2))} lbs, $${cha
 function catchFish() {
     let randomFish = generateFish();
     let randomWeight = generateWeight();
-    let randomValue = generateValue();
+    let randomValue = generateValue(randomFish);
     let randomDuration = generateTime();
 
     console.log(`After ${randomDuration} minutes, you caught a ${randomFish} weighing ${chalk.red.bold(`${randomWeight} lbs`)} and valued at ${chalk.red.bold(`$${randomValue}`)}
@@ -141,5 +153,16 @@ function computeTime(duration) {
         showSummary(`${hour}:${minute}am`, `continue`)
     } else {
         showSummary(`${hour}:${minute}pm`, `done`)
+    }
+};
+
+function getSpecialFish(obj) {
+    let i
+    let sum = 0
+    let r = Math.random()
+
+    for (i in obj) {
+        sum += obj[i]
+        if (r <= sum) return i
     }
 };
