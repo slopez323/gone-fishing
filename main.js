@@ -200,10 +200,10 @@ function getSpecialFish(obj) {
 
 function chumOrCatch(act) {
     if (act === '1') {
-        durationMultiplier *= 0.9;
+        durationMultiplier *= 0.8;
         time += 30;
         console.log(chalk.blue.bold(`
-You chummed the water for 30 minutes and increased the speed of catching fish by 10%.
+You chummed the water for 30 minutes and increased the speed of catching fish by 20%.
 `));
         catchFish();
     } else if (act === '2') {
