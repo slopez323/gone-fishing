@@ -60,7 +60,9 @@ You caught ${fishCount} fish:`);
         }
         console.log(`
 Total weight: ${totalWeight} lbs
-Total value: $${totalValue}`);
+Total value: $${totalValue}
+
+================================================`);
     } else {
         console.log(`
 ================================================
@@ -105,11 +107,15 @@ function getAction(randomFish, randomWeight, randomValue) {
 }
 
 function addFish(randomFish, randomWeight, randomValue) {
-let newFish = {}
-newFish.type = randomFish;
-newFish.weight = randomWeight;
-newFish.value = randomValue;
+    let newFish = {}
+    newFish.type = randomFish;
+    newFish.weight = randomWeight;
+    newFish.value = randomValue;
 
-caughtFish.push(newFish);
+    caughtFish.push(newFish);
+    fishCount++;
+    totalWeight += randomWeight;
+    totalValue += randomValue;
 
+    showSummary();
 }
