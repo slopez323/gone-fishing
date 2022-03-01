@@ -5,14 +5,14 @@ let fishCount = 0;
 let caughtFish = []; // keys: type, weight, value
 let totalWeight = 0;
 let totalValue = 0;
-let time = 6;
+let time = 360;
 
 console.log(chalk.blue(`
 ================================================
 
 You've gone fishing! Try to maximize the value of your caught fish. You can fish
 for ${chalk.underline('six hours (till 12:00pm)')} and can catch ${chalk.underline('at most 10 lbs')} of fish.`));
-showSummary();
+showSummary('6:00am', 'continue');
 
 // randomly generated fish (2 descriptors + type)
 function generateFish() {
@@ -39,14 +39,20 @@ function generateValue() {
     return value;
 }
 
+// randomly generated time (15min to 1.5hrs)
+function generateTime() {
+    let duration = Math.floor(Math.random() * 76) + 15;
+    return duration;
+}
 
 
-function showSummary() {
-    if (time === 12) {
+
+function showSummary(currentTime, status) {
+    if (status === "done") {
         console.log(chalk.blue(`
 ================================================
 `));
-        console.log(`The time is ${chalk.bold('12:00pm')}.  Time's up!
+        console.log(`The time is ${chalk.bold(currentTime)}.  Time's up!
         
 You caught ${chalk.bold(fishCount)} fish:`);
         for (let i = 0; i < caughtFish.length; i++) {
@@ -61,23 +67,21 @@ Total value: ${chalk.green.bold(`$${totalValue.toFixed(2)}`)}
         console.log(chalk.blue(`
 ================================================
 `));
-console.log(`The time is ${chalk.bold(`${time}:00am`)}.  So far you've caught:
+        console.log(`The time is ${chalk.bold(currentTime)}.  So far you've caught:
 ${chalk.bold(fishCount)} fish, ${chalk.bold(totalWeight.toFixed(2))} lbs, $${chalk.bold(totalValue.toFixed(2))}
 
 `);
-
-        time++;
-
         catchFish();
     }
-}
+};
 
 function catchFish() {
     let randomFish = generateFish();
     let randomWeight = generateWeight();
     let randomValue = generateValue();
+    let randomDuration = generateTime();
 
-    console.log(`You caught a ${randomFish} weighing ${chalk.red.bold(`${randomWeight} lbs`)} and valued at ${chalk.red.bold(`$${randomValue}`)}
+    console.log(`After ${randomDuration} minutes, you caught a ${randomFish} weighing ${chalk.red.bold(`${randomWeight} lbs`)} and valued at ${chalk.red.bold(`$${randomValue}`)}
     
     `);
 
@@ -86,31 +90,31 @@ function catchFish() {
         `);
         prompt(`Press [enter] to continue.
 > `);
-        showSummary();
+        computeTime(randomDuration);
     } else {
-        getAction(randomFish, randomWeight, randomValue);
+        getAction(randomFish, randomWeight, randomValue, randomDuration);
     }
-}
+};
 
-function getAction(randomFish, randomWeight, randomValue) {
+function getAction(randomFish, randomWeight, randomValue, randomDuration) {
     console.log(`Your action: [c]atch or [r]elease?`)
     let action = prompt(`> `)
     if (action === "c") {
         console.log(`
 You chose to keep the fish.
 `)
-        addFish(randomFish, randomWeight, randomValue);
+        addFish(randomFish, randomWeight, randomValue, randomDuration);
     } else if (action === "r") {
         console.log(`
 You chose to release the fish.
 `)
-        showSummary();
+        computeTime(randomDuration);
     } else {
-        getAction(randomFish, randomWeight, randomValue);
+        getAction(randomFish, randomWeight, randomValue, randomDuration);
     }
-}
+};
 
-function addFish(randomFish, randomWeight, randomValue) {
+function addFish(randomFish, randomWeight, randomValue, randomDuration) {
     let newFish = {}
     newFish.type = randomFish;
     newFish.weight = randomWeight;
@@ -121,5 +125,21 @@ function addFish(randomFish, randomWeight, randomValue) {
     totalWeight += randomWeight;
     totalValue += randomValue;
 
-    showSummary();
-}
+    computeTime(randomDuration);
+};
+
+function computeTime(duration) {
+    time += duration;
+    let hour = Math.floor(time / 60);
+    let minute = Math.round((time / 60 - hour) * 60);
+
+    if (String(minute).length < 2) {
+        minute = `0${minute}`
+    }
+
+    if (hour >= 6 && hour < 12) {
+        showSummary(`${hour}:${minute}am`, `continue`)
+    } else {
+        showSummary(`${hour}:${minute}pm`, `done`)
+    }
+};
