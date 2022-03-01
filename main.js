@@ -86,9 +86,12 @@ ${chalk.bold(fishCount)} fish, ${chalk.bold(totalWeight.toFixed(2))} lbs, $${cha
 
 `);
     if (time + 30 < 720) {
-        console.log(`Would you like to [1]chum the water with bait for 30 minutes to increase speed of catching fish or [2]proceed with catching fish?`);
+        console.log(`What would you like to do: 
+[1]chum the water with bait for 30 minutes to increase speed of catching fish
+[2]proceed with catching fish
+[3]release previously caught fish`);
         let act = prompt(`> `);
-        if (act === '1' || act === '2') {
+        if (act === '1' || act === '2' || act === '3') {
             chumOrCatch(act)
         } else {
             goFishing(currentTime)
@@ -167,7 +170,7 @@ function computeTime(duration) {
     }
 
     // if (hour >= 6 && hour < 12) {
-        goFishing(`${hour}:${minute}am`)
+    goFishing(`${hour}:${minute}am`)
     // } else {
     //     showFinal(`${hour}:${minute}pm`)
     // }
@@ -194,5 +197,37 @@ You chummed the water for 30 minutes and increased the speed of catching fish by
         catchFish();
     } else if (act === '2') {
         catchFish();
+    } else {
+        if (caughtFish.length === 0) {
+            console.log(chalk.blue.bold(`
+You currently don't have any fish.`));
+            computeTime(0);
+        } else {
+            console.log(`
+You currently have the following: 
+`);
+            for (let i = 0; i < caughtFish.length; i++) {
+                console.log(`[${i + 1}] ${caughtFish[i].type}, ${caughtFish[i].weight} lbs, $${caughtFish[i].value}`);
+            };
+            let release
+            do {
+                console.log(`
+Which fish would you like to release? Enter ${caughtFish.length + 1} if you would like to cancel.`);
+                release = +prompt(`> `);
+            } while (!(release >= 1 && release <= caughtFish.length + 1));
+            releaseFish(release);
+        };
     };
 };
+
+function releaseFish(num) {
+    if (num === caughtFish.length + 1) {
+        computeTime(0);
+    } else {
+        fishCount--
+        totalWeight -= caughtFish[num-1].weight
+        totalValue -= caughtFish[num-1].value
+        caughtFish.splice(num - 1, 1);
+        computeTime(0);
+    };
+}
