@@ -1,17 +1,17 @@
 const prompt = require("prompt-sync")();
+const chalk = require("chalk");
 
-//variables
 let fishCount = 0;
 let caughtFish = []; // keys: type, weight, value
 let totalWeight = 0;
 let totalValue = 0;
 let time = 6;
 
-console.log(`
+console.log(chalk.blue(`
 ================================================
 
 You've gone fishing! Try to maximize the value of your caught fish. You can fish
-for six hours (till 12:00pm) and can catch at most 10 lbs of fish.`);
+for ${chalk.underline('six hours (till 12:00pm)')} and can catch ${chalk.underline('at most 10 lbs')} of fish.`));
 showSummary();
 
 // randomly generated fish (2 descriptors + type)
@@ -40,35 +40,29 @@ function generateValue() {
 }
 
 
-// display time (1hr in between each catch, max 6 hrs)
-// count caught fish
-// sum weight and value of caught fish
-// prompt for catch / release
-
-
 
 function showSummary() {
     if (time === 12) {
-        console.log(`
+        console.log(chalk.blue(`
 ================================================
-
-The time is 12:00pm.  Time's up!
+`));
+        console.log(`The time is ${chalk.bold('12:00pm')}.  Time's up!
         
-You caught ${fishCount} fish:`);
+You caught ${chalk.bold(fishCount)} fish:`);
         for (let i = 0; i < caughtFish.length; i++) {
-            console.log(`* ${caughtFish[i].type}, ${caughtFish[i].weight} lbs, $${caughtFish[i].value}`);
+            console.log(chalk.green(`* ${caughtFish[i].type}, ${caughtFish[i].weight} lbs, $${caughtFish[i].value}`));
         }
         console.log(`
-Total weight: ${totalWeight.toFixed(2)} lbs
-Total value: $${totalValue.toFixed(2)}
-
-================================================`);
+Total weight: ${chalk.green.bold(`${totalWeight.toFixed(2)} lbs`)}
+Total value: ${chalk.green.bold(`$${totalValue.toFixed(2)}`)}
+`);
+        console.log(chalk.blue(`================================================`));
     } else {
-        console.log(`
+        console.log(chalk.blue(`
 ================================================
-        
-The time is ${time}:00am.  So far you've caught:
-${fishCount} fish, ${totalWeight.toFixed(2)} lbs, $${totalValue.toFixed(2)}
+`));
+console.log(`The time is ${chalk.bold(`${time}:00am`)}.  So far you've caught:
+${chalk.bold(fishCount)} fish, ${chalk.bold(totalWeight.toFixed(2))} lbs, $${chalk.bold(totalValue.toFixed(2))}
 
 `);
 
@@ -83,7 +77,7 @@ function catchFish() {
     let randomWeight = generateWeight();
     let randomValue = generateValue();
 
-    console.log(`You caught a ${randomFish} weighing ${randomWeight} lbs and valued at $${randomValue}
+    console.log(`You caught a ${randomFish} weighing ${chalk.red.bold(`${randomWeight} lbs`)} and valued at ${chalk.red.bold(`$${randomValue}`)}
     
     `);
 
