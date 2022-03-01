@@ -59,8 +59,8 @@ You caught ${fishCount} fish:`);
             console.log(`* ${caughtFish[i].type}, ${caughtFish[i].weight} lbs, $${caughtFish[i].value}`);
         }
         console.log(`
-Total weight: ${totalWeight} lbs
-Total value: $${totalValue}
+Total weight: ${totalWeight.toFixed(2)} lbs
+Total value: $${totalValue.toFixed(2)}
 
 ================================================`);
     } else {
@@ -68,7 +68,9 @@ Total value: $${totalValue}
 ================================================
         
 The time is ${time}:00am.  So far you've caught:
-${fishCount} fish, ${totalWeight} lbs, $${totalValue}`);
+${fishCount} fish, ${totalWeight.toFixed(2)} lbs, $${totalValue.toFixed(2)}
+
+`);
 
         time++;
 
@@ -81,7 +83,9 @@ function catchFish() {
     let randomWeight = generateWeight();
     let randomValue = generateValue();
 
-    console.log(`You caught a ${randomFish} weighing ${randomWeight} lbs and valued at $${randomValue}`);
+    console.log(`You caught a ${randomFish} weighing ${randomWeight} lbs and valued at $${randomValue}
+    
+    `);
 
     if (totalWeight + randomWeight > 10) {
         console.log(`This fish would put you over 10 lbs, so you release it.
@@ -98,8 +102,14 @@ function getAction(randomFish, randomWeight, randomValue) {
     console.log(`Your action: [c]atch or [r]elease?`)
     let action = prompt(`> `)
     if (action === "c") {
+        console.log(`
+You chose to keep the fish.
+`)
         addFish(randomFish, randomWeight, randomValue);
     } else if (action === "r") {
+        console.log(`
+You chose to release the fish.
+`)
         showSummary();
     } else {
         getAction(randomFish, randomWeight, randomValue);
