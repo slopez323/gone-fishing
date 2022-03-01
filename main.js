@@ -6,13 +6,14 @@ let caughtFish = []; // keys: type, weight, value
 let totalWeight = 0;
 let totalValue = 0;
 let time = 360;
+let durationMultiplier = 1
 
 console.log(chalk.blue(`
 ================================================
 
 You've gone fishing! Try to maximize the value of your caught fish. You can fish
 for ${chalk.underline('six hours (till 12:00pm)')} and can catch ${chalk.underline('at most 10 lbs')} of fish.`));
-showSummary('6:00am', 'continue');
+goFishing('6:00am');
 
 // randomly generated fish (2 descriptors + type)
 function generateFish() {
@@ -43,68 +44,84 @@ function generateWeight() {
 function generateValue(fish) {
     if (fish === 'Golden Doubloon') {
         return 50;
-    } else if (fish === 'Valueless Boot'){
+    } else if (fish === 'Valueless Boot') {
         return 0;
     } else {
-    let value = +((Math.random() * 20).toFixed(2));
-    return value;
+        let value = +((Math.random() * 20).toFixed(2));
+        return value;
     }
 };
 
 // randomly generated time (15min to 1.5hrs)
 function generateTime() {
-    let duration = Math.floor(Math.random() * 76) + 15;
-    return duration;
+    let duration = (Math.floor(Math.random() * 76) + 15) * durationMultiplier;
+    return Math.floor(duration);
 }
 
 
 
-function showSummary(currentTime, status) {
-    if (status === "done") {
-        console.log(chalk.blue(`
+function showFinal(currentTime) {
+    console.log(chalk.blue(`
 ================================================
 `));
-        console.log(`The time is ${chalk.bold(currentTime)}.  Time's up!
+    console.log(`The time is ${chalk.bold(currentTime)}.  Time's up!
         
 You caught ${chalk.bold(fishCount)} fish:`);
-        for (let i = 0; i < caughtFish.length; i++) {
-            console.log(chalk.green(`* ${caughtFish[i].type}, ${caughtFish[i].weight} lbs, $${caughtFish[i].value}`));
-        }
-        console.log(`
+    for (let i = 0; i < caughtFish.length; i++) {
+        console.log(chalk.green(`* ${caughtFish[i].type}, ${caughtFish[i].weight} lbs, $${caughtFish[i].value}`));
+    }
+    console.log(`
 Total weight: ${chalk.green.bold(`${totalWeight.toFixed(2)} lbs`)}
 Total value: ${chalk.green.bold(`$${totalValue.toFixed(2)}`)}
 `);
-        console.log(chalk.blue(`================================================`));
-    } else {
-        console.log(chalk.blue(`
+    console.log(chalk.blue(`================================================`));
+}
+
+function goFishing(currentTime) {
+    console.log(chalk.blue(`
 ================================================
 `));
-        console.log(`The time is ${chalk.bold(currentTime)}.  So far you've caught:
+    console.log(`The time is ${chalk.bold(currentTime)}.  So far you've caught:
 ${chalk.bold(fishCount)} fish, ${chalk.bold(totalWeight.toFixed(2))} lbs, $${chalk.bold(totalValue.toFixed(2))}
 
 `);
-        catchFish();
-    }
+    if (time + 30 < 720) {
+        console.log(`Would you like to [1]chum the water with bait for 30 minutes to increase speed of catching fish or [2]proceed with catching fish?`);
+        let act = prompt(`> `);
+        if (act === '1' || act === '2') {
+            chumOrCatch(act)
+        } else {
+            goFishing(currentTime)
+        };
+    } else catchFish();
 };
 
 function catchFish() {
+    console.log(chalk.red.bold(`
+You're fishing...`))
     let randomFish = generateFish();
     let randomWeight = generateWeight();
     let randomValue = generateValue(randomFish);
     let randomDuration = generateTime();
 
-    console.log(`After ${randomDuration} minutes, you caught a ${randomFish} weighing ${chalk.red.bold(`${randomWeight} lbs`)} and valued at ${chalk.red.bold(`$${randomValue}`)}
+    if (time + randomDuration > 720) {
+        console.log(chalk.blue.bold(`You ran out of time.`))
+        showFinal(`12:00pm`)
+    } else {
+        console.log(`
+After ${randomDuration} minutes, you caught a ${randomFish} weighing ${chalk.red.bold(`${randomWeight} lbs`)} and valued at ${chalk.red.bold(`$${randomValue}`)}
     
     `);
 
-    if (totalWeight + randomWeight > 10) {
-        console.log(`This fish would put you over 10 lbs, so you release it.
-        `);
-        prompt(`Press [enter] to continue.
+        if (totalWeight + randomWeight > 10) {
+            console.log(chalk.blue.bold(`This fish would put you over 10 lbs, so you release it.
+        `));
+            prompt(`Press [enter] to continue.
 > `);
-        computeTime(randomDuration);
-    } else {
-        getAction(randomFish, randomWeight, randomValue, randomDuration);
+            computeTime(randomDuration);
+        } else {
+            getAction(randomFish, randomWeight, randomValue, randomDuration);
+        }
     }
 };
 
@@ -112,14 +129,14 @@ function getAction(randomFish, randomWeight, randomValue, randomDuration) {
     console.log(`Your action: [c]atch or [r]elease?`)
     let action = prompt(`> `)
     if (action === "c") {
-        console.log(`
+        console.log(chalk.blue.bold(`
 You chose to keep the fish.
-`)
+`))
         addFish(randomFish, randomWeight, randomValue, randomDuration);
     } else if (action === "r") {
-        console.log(`
+        console.log(chalk.blue.bold(`
 You chose to release the fish.
-`)
+`))
         computeTime(randomDuration);
     } else {
         getAction(randomFish, randomWeight, randomValue, randomDuration);
@@ -149,11 +166,11 @@ function computeTime(duration) {
         minute = `0${minute}`
     }
 
-    if (hour >= 6 && hour < 12) {
-        showSummary(`${hour}:${minute}am`, `continue`)
-    } else {
-        showSummary(`${hour}:${minute}pm`, `done`)
-    }
+    // if (hour >= 6 && hour < 12) {
+        goFishing(`${hour}:${minute}am`)
+    // } else {
+    //     showFinal(`${hour}:${minute}pm`)
+    // }
 };
 
 function getSpecialFish(obj) {
@@ -165,4 +182,17 @@ function getSpecialFish(obj) {
         sum += obj[i]
         if (r <= sum) return i
     }
+};
+
+function chumOrCatch(act) {
+    if (act === '1') {
+        durationMultiplier *= 0.9;
+        time += 30;
+        console.log(chalk.blue.bold(`
+You chummed the water for 30 minutes and increased the speed of catching fish by 10%.
+`));
+        catchFish();
+    } else if (act === '2') {
+        catchFish();
+    };
 };
