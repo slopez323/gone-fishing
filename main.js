@@ -96,7 +96,18 @@ ${chalk.bold(fishCount)} fish, ${chalk.bold(totalWeight.toFixed(2))} lbs, $${cha
         } else {
             goFishing(currentTime)
         };
-    } else catchFish();
+    } else {
+        console.log(`You don't have enough time to chum the water.  What would you like to do:
+[1]proceed with catching fish
+[2]release previously caught fish`);
+        let act = prompt(`> `);
+        if (act === '1' || act === '2') {
+            act = String(+act + 1)
+            chumOrCatch(act)
+        } else {
+            goFishing(currentTime)
+        };
+    };
 };
 
 function catchFish() {
@@ -225,8 +236,8 @@ function releaseFish(num) {
         computeTime(0);
     } else {
         fishCount--
-        totalWeight -= caughtFish[num-1].weight
-        totalValue -= caughtFish[num-1].value
+        totalWeight -= caughtFish[num - 1].weight
+        totalValue -= caughtFish[num - 1].value
         caughtFish.splice(num - 1, 1);
         computeTime(0);
     };
